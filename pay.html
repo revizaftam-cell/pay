@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>REVIZA · PAYMENT</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
+    <style>
+        /* === RESET & BACKGROUND === */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        
+        body { 
+            background-color: #0b0213; 
+            font-family: 'Inter', sans-serif; 
+            color: #d1b3e8; 
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden; min-height: 100vh;
+            display: flex; flex-direction: column;
+            line-height: 1.6; letter-spacing: 0.3px;
+        }
+
+        #bg-hex {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='103.92304845413264' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60 25.98076211353316l-30 17.32050807568877L0 25.98076211353316V-8.660254037844387l30-17.32050807568877 30 17.32050807568877V25.98076211353316zm0 69.28203230275509l-30 17.32050807568877-30-17.32050807568877V60.6217782649107l30-17.32050807568877 30 17.32050807568877v34.64101615137754z' fill='%23d000ff' fill-opacity='0.07' fill-rule='evenodd'/%3E%3C/svg%3E");
+            z-index: -1; pointer-events: none;
+        }
+
+        /* === HEADER === */
+        .header {
+            position: absolute; top: 0; left: 0; width: 100%; z-index: 1000;
+            background: rgba(11, 2, 19, 0.95); border-bottom: 1px solid rgba(208, 0, 255, 0.15);
+            padding: 15px 14px; text-align: center;
+        }
+        .header .logo { font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: 900; color: #d000ff; text-shadow: 0 0 15px rgba(208,0,255,0.5); letter-spacing: 2px; }
+
+        /* === MAIN CONTENT === */
+        .main { flex: 1; max-width: 500px; margin: 0 auto; padding: 80px 20px 40px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        
+        .section-title { font-size: 16px; font-weight: 900; color: #e040fb; margin-bottom: 20px; letter-spacing: 1px; text-transform: UPPERCASE; text-align: center; font-family: 'Orbitron', sans-serif;}
+        
+        /* === PAYMENT CARD === */
+        .pay-card {
+            background: rgba(20, 5, 35, 0.85); border: 1px solid rgba(208, 0, 255, 0.3); border-radius: 20px; padding: 25px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            margin-bottom: 25px;
+        }
+
+        /* QRIS SECTION */
+        .qris-container { text-align: center; margin-bottom: 25px; }
+        .qris-container img {
+            width: 100%; max-width: 250px; aspect-ratio: 1/1; object-fit: contain;
+            border-radius: 12px; border: 2px dashed #d000ff; padding: 10px;
+            background: #fff; /* QRIS butuh background putih agar mudah di-scan */
+            margin: 0 auto; display: block;
+        }
+        .qris-container p { font-size: 12px; color: rgba(209, 179, 232, 0.7); margin-top: 10px; font-weight: 600; }
+
+        .divider { border: none; height: 1px; background: linear-gradient(90deg, transparent, rgba(208, 0, 255, 0.3), transparent); margin: 20px 0; width: 100%; }
+
+        /* MANUAL TRANSFER (DANA) */
+        .manual-tf { text-align: center; }
+        .manual-tf .bank-name { font-family: 'Orbitron', sans-serif; font-size: 18px; color: #fff; font-weight: 900; margin-bottom: 5px; color: #3b82f6; text-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+        .manual-tf .rek-number { font-size: 24px; font-weight: 900; color: #e040fb; letter-spacing: 2px; margin-bottom: 5px; }
+        .manual-tf .an-name { font-size: 12px; color: #d1b3e8; margin-bottom: 15px; font-weight: 600; }
+        
+        .btn-copy {
+            background: linear-gradient(135deg, #4a148c, #311b92); border: 1px solid rgba(208,0,255,0.5); border-radius: 40px; color: #ffffff;
+            padding: 10px 25px; font-size: 12px; font-weight: 900; letter-spacing: 1px; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-copy:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 20, 140, 0.7); border-color: #d000ff; }
+        .btn-copy.copied { background: linear-gradient(135deg, #1b5e20, #004d40); border-color: #00e676; }
+
+        /* === NAVIGATION BUTTONS === */
+        .nav-buttons { display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 25px; }
+        .nav-buttons a {
+            width: 100%; text-align: center; padding: 14px 20px; border-radius: 14px; font-size: 12px; font-weight: 900; text-transform: UPPERCASE; text-decoration: none; transition: 0.3s;
+            background: rgba(11, 2, 19, 0.8); color: #ffffff; border: 1px solid rgba(208,0,255,0.3); box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .nav-buttons a.primary { background: linear-gradient(135deg, #4a148c, #311b92); border-color: #d000ff; }
+        .nav-buttons a:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(208,0,255,0.3); background: #4a148c; }
+
+        /* === MUSIC PLAYER === */
+        .music-player { background: rgba(20, 5, 35, 0.8); border: 1px solid rgba(208, 0, 255, 0.2); border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; gap: 16px; cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.5); width: 100%; margin-bottom: 20px;}
+        .music-player .disc { width: 44px; height: 44px; border-radius: 50%; background: conic-gradient(from 0deg, #111, #4a148c, #111, #4a148c, #111); border: 2px solid #d000ff; flex-shrink: 0; display: flex; align-items: center; justify-content: center; animation: spinDisc 3s linear infinite; animation-play-state: paused; }
+        .music-player .disc.play { animation-play-state: running; }
+        @keyframes spinDisc { to { transform: rotate(360deg); } }
+        .music-player .disc::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #d000ff; }
+        .music-player .info { flex: 1; min-width: 0; }
+        .music-player .info .title { font-weight: 900; font-size: 13px; color: #fff; margin-bottom: 4px; text-transform: UPPERCASE; letter-spacing: 0.5px; }
+        .music-player .info .duration { font-size: 11px; color: #e040fb; font-weight: 600; }
+        .music-player .spec { display: flex; align-items: flex-end; gap: 3px; height: 28px; flex: 0 0 60px; }
+        .music-player .spec span { flex: 1; height: 4px; background: #e040fb; border-radius: 2px; transition: height 0.08s ease; }
+
+        .footer { text-align: center; font-size: 11px; color: rgba(209, 179, 232, 0.5); margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div id="bg-hex"></div>
+
+    <!-- AUDIO FILES (Sama dengan halaman utama) -->
+    <audio id="clickSnd" preload="none"><source src="://cdn.nekohime.site/file/0kiyfumx.mp3" type="audio/mpeg" /></audio>
+    <audio id="bgMusic" preload="none" loop><source src="https://c.termai.cc/a110/LXxj.mp3" type="audio/mpeg" /></audio>
+
+    <header class="header">
+        <span class="logo">✦ SECURE PAYMENT ✦</span>
+    </header>
+
+    <main class="main">
+        
+        <div class="section-title">PILIH METODE PEMBAYARAN</div>
+
+        <div class="pay-card">
+            <!-- ================= [ 1. GANTI LINK GAMBAR QRIS DISINI ] ================= -->
+            <div class="qris-container">
+                <!-- Pastikan gambar QRIS kamu memiliki resolusi kotak (1:1) -->
+                <img src="https://cdn.nekohime.site/file/p96pvq4m.jpg" alt="QRIS ALL PAYMENT" />
+                <p>Scan QRIS di atas menggunakan E-Wallet / M-Banking</p>
+            </div>
+
+            <hr class="divider" />
+
+            <!-- ================= [ 2. DATA DANA MANUAL TRANSFER ] ================= -->
+            <div class="manual-tf">
+                <div class="bank-name">DANA</div>
+                <!-- Nomor DANA -->
+                <div class="rek-number" id="danaNumber">08978595858</div>
+                <!-- Nama Rekening -->
+                <div class="an-name">A/N: MUHxxxAD RExxA FLxxxAN</div>
+                
+                <button class="btn-copy" id="btnCopy" onclick="copyDana()">
+                    <span id="copyText">📋 SALIN NOMOR</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= [ 3. GANTI LINK NAVIGASI DISINI ] ================= -->
+        <div class="nav-buttons">
+            <!-- Isi href="" dengan link halaman produk kamu -->
+            <a href="https://produk.revizayowa.biz.id" class="primary">🛒 HALAMAN PRODUK</a>
+            
+            <!-- Isi href="" dengan link halaman utama kamu (contoh: https://revizayowa.biz.id/) -->
+            <a href="https://revizayowa.biz.id">🏠 KEMBALI KE HALAMAN UTAMA</a>
+        </div>
+
+        <!-- MUSIC PLAYER -->
+        <div class="music-player" id="musicPlayer">
+            <div class="disc" id="disc"></div>
+            <div class="info">
+                <div class="title" id="songTitle">YAOSOBI IDOL</div>
+                <div class="duration" id="songDuration">⏵ 00:00</div>
+            </div>
+            <div class="spec" id="specBars"></div>
+        </div>
+
+        <div class="footer">
+            © <b>ZAAPREST</b> SECURE CHECKOUT<br />
+        </div>
+
+    </main>
+
+    <script>
+        // --- 1. GLOBAL CLICK SOUND ---
+        const clickSnd = document.getElementById('clickSnd');
+        function playClickSound() { clickSnd.currentTime = 0; clickSnd.play().catch(()=>{}); }
+        document.addEventListener('click', function(e) { if(e.target.closest('a, button, .music-player')) playClickSound(); });
+
+        // --- 2. FITUR SALIN NOMOR DANA ---
+        function copyDana() {
+            const danaNumber = "08978595858";
+            const btn = document.getElementById('btnCopy');
+            const textSpan = document.getElementById('copyText');
+
+            navigator.clipboard.writeText(danaNumber).then(() => {
+                // Efek visual sukses
+                btn.classList.add('copied');
+                textSpan.textContent = "✅ BERHASIL DISALIN!";
+                
+                // Kembalikan ke teks semula setelah 2.5 detik
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    textSpan.textContent = "📋 SALIN NOMOR";
+                }, 2500);
+            }).catch(err => {
+                alert("Gagal menyalin nomor, silakan salin manual.");
+            });
+        }
+
+        // --- 3. MUSIC PLAYER & SPECTRUM (Sama persis dengan halaman utama) ---
+        const specContainer = document.getElementById('specBars'); 
+        let specBars = [];
+        for (let i = 0; i < 14; i++) { 
+            const b = document.createElement('span'); 
+            b.style.height = '4px'; 
+            specContainer.appendChild(b); 
+            specBars.push(b); 
+        }
+        
+        let specInterval = null;
+        function startSpectrum() {
+            if (specInterval) return;
+            specInterval = setInterval(() => { 
+                specBars.forEach(b => { b.style.height = (Math.floor(Math.random() * 20) + 4) + 'px'; }); 
+            }, 100);
+        }
+        function stopSpectrum() {
+            if (specInterval) { clearInterval(specInterval); specInterval = null; }
+            specBars.forEach(b => b.style.height = '4px');
+        }
+        
+        const musicPlayer = document.getElementById('musicPlayer');
+        const music = document.getElementById('bgMusic');
+        const disc = document.getElementById('disc');
+        const songTitle = document.getElementById('songTitle');
+        const songDuration = document.getElementById('songDuration');
+
+        musicPlayer.addEventListener('click', () => {
+            if (music.paused) { 
+                music.play(); 
+                disc.classList.add('play'); 
+                songTitle.textContent = 'IDOL YAOSOBI ♪'; 
+                startSpectrum(); 
+            } else { 
+                music.pause(); 
+                disc.classList.remove('play'); 
+                songTitle.textContent = '⏸ PAUSED'; 
+                stopSpectrum(); 
+            }
+        });
+
+        setInterval(() => {
+            if(!music.paused && !isNaN(music.duration)) {
+                let m = Math.floor(music.currentTime/60);
+                let s = Math.floor(music.currentTime%60);
+                let tm = Math.floor(music.duration/60);
+                let ts = Math.floor(music.duration%60);
+                songDuration.textContent = '⏵ ' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0') + ' / ' + String(tm).padStart(2,'0') + ':' + String(ts).padStart(2,'0');
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
