@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>REVIZA · Pembayaran</title>
+
+    <!-- META PREVIEW (WA/Telegram/dll) -->
+    <meta name="description" content="Bayar order REVIZA — QRIS universal & transfer DANA. Fast respon, aman, terpercaya." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="REVIZA" />
+    <meta property="og:url" content="https://pay.revizayowa.biz.id/" />
+    <meta property="og:title" content="Pembayaran REVIZA" />
+    <meta property="og:description" content="Bayar via QRIS (GoPay, OVO, DANA, ShopeePay, M-Banking) atau transfer DANA. Fast respon!" />
+    <meta property="og:image" content="https://cdn.nekohime.site/file/5q0o1dji.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#d000ff" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        /* NO REPLIT BADGE */
+        .__replit-badge, [data-replit-badge], .replit-badge, #replit-badge { display: none !important; }
+        :root {
+            --bg: #0b0213;
+            --accent: #d000ff;
+            --accent2: #e040fb;
+            --card: rgba(20, 5, 35, 0.88);
+            --border: rgba(208, 0, 255, 0.2);
+            --text: #d1b3e8;
+            --text-dim: rgba(209, 179, 232, 0.55);
+        }
+        body { background-color: var(--bg); font-family: 'Inter', sans-serif; color: var(--text); -webkit-tap-highlight-color: transparent; overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; line-height: 1.6; }
+
+        #bg-hex { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-image: url("data:image/svg+xml,%3Csvg width='60' height='103.92' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60 26L30 43.3 0 26V-8.7L30-26 60-8.7V26zm0 69.3L30 112.6 0 95.3V60.6L30 43.3l30 17.3v34.7z' fill='%23d000ff' fill-opacity='0.06' fill-rule='evenodd'/%3E%3C/svg%3E"); z-index: -1; pointer-events: none; }
+
+        /* LOADING */
+        #loading { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(8,1,14,0.97); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s ease, visibility 0.8s; padding: 20px; }
+        #loading.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+        .ld-box { max-width: 320px; width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 36px 26px 28px; text-align: center; box-shadow: 0 0 60px rgba(208,0,255,0.07), 0 20px 50px rgba(0,0,0,0.9); }
+        .ld-logo-wrap { width: 60px; height: 60px; margin: 0 auto 20px; position: relative; }
+        .ld-ring { width: 60px; height: 60px; border: 2px solid transparent; border-top: 2px solid var(--accent); border-right: 2px solid rgba(208,0,255,0.2); border-radius: 50%; animation: spin 1s linear infinite; position: absolute; }
+        .ld-ring-inner { width: 42px; height: 42px; border: 2px solid transparent; border-bottom: 2px solid var(--accent2); border-left: 2px solid rgba(224,64,251,0.2); border-radius: 50%; animation: spin 1.4s linear infinite reverse; position: absolute; top: 9px; left: 9px; }
+        .ld-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); box-shadow: 0 0 10px var(--accent); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .ld-brand { font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 900; color: var(--accent); letter-spacing: 3px; text-shadow: 0 0 16px rgba(208,0,255,0.4); margin-bottom: 4px; }
+        .ld-sub { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; }
+        .ld-progress { width: 100%; height: 3px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
+        .ld-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #7b1fa2, var(--accent)); border-radius: 3px; transition: width 0.15s ease-out; }
+        .ld-status { font-size: 10px; color: var(--text-dim); font-family: monospace; min-height: 14px; margin-bottom: 20px; }
+        .ld-btn { display: none; padding: 11px 28px; background: linear-gradient(135deg, #4a148c, #311b92); border: 1px solid rgba(208,0,255,0.4); border-radius: 40px; color: #fff; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: 0.25s; }
+        .ld-btn:hover { transform: translateY(-2px); }
+
+        /* HEADER */
+        .header { position: sticky; top: 0; width: 100%; z-index: 100; background: rgba(11,2,19,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; }
+        .header .logo { font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 900; color: var(--accent); letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+        .header .logo svg { width: 15px; height: 15px; }
+        .header .back-btn { display: flex; align-items: center; gap: 6px; padding: 7px 13px; background: rgba(74,20,140,0.25); border: 1px solid rgba(208,0,255,0.2); border-radius: 20px; color: var(--text); text-decoration: none; font-size: 11px; font-weight: 700; transition: 0.2s; }
+        .header .back-btn:hover { background: rgba(74,20,140,0.45); border-color: rgba(208,0,255,0.4); color: #fff; }
+        .header .back-btn svg { width: 12px; height: 12px; }
+
+        /* MAIN */
+        .main { flex: 1; max-width: 500px; margin: 0 auto; padding: 22px 18px 60px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+
+        .page-title { text-align: center; margin-bottom: 20px; width: 100%; }
+        .page-title h1 { font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 900; color: #fff; letter-spacing: 2px; margin-bottom: 4px; }
+        .page-title p { font-size: 11px; color: var(--text-dim); }
+
+        /* PAYMENT CARD */
+        .pay-card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 24px 20px; width: 100%; box-shadow: 0 12px 50px rgba(0,0,0,0.7); margin-bottom: 18px; }
+
+        /* ======================================================
+           QRIS SECTION — desain besar & jelas
+        ====================================================== */
+        .qris-section {
+            margin-bottom: 6px;
+            display: flex; flex-direction: column; align-items: center; width: 100%;
+        }
+
+        .qris-header {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-bottom: 18px;
+        }
+        .qris-header-badge {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px; font-weight: 900;
+            color: #fff; letter-spacing: 1px;
+        }
+        .qris-header-tag {
+            font-size: 9px; font-weight: 900;
+            background: linear-gradient(135deg, #d000ff, #e040fb);
+            color: #fff; border-radius: 10px;
+            padding: 2px 8px; letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .qris-outer {
+            display: block; width: fit-content; max-width: 100%;
+            background: linear-gradient(135deg, rgba(208,0,255,0.15), rgba(106,27,154,0.15));
+            border: 2px solid rgba(208,0,255,0.35);
+            border-radius: 20px;
+            padding: 12px;
+            box-shadow: 0 0 40px rgba(208,0,255,0.15), 0 12px 40px rgba(0,0,0,0.5);
+            margin-bottom: 14px; box-sizing: border-box;
+        }
+        .qris-inner {
+            background: #fff;
+            border-radius: 12px;
+            padding: 10px;
+            display: flex; flex-direction: column; align-items: center;
+            width: 100%;
+        }
+        /* ===== [UBAH: GAMBAR QRIS — ganti src di dalam <img> di bawah] ===== */
+        .qris-inner img {
+            display: block;
+            width: min(220px, calc(100vw - 130px));
+            height: min(220px, calc(100vw - 130px));
+            object-fit: contain;
+            border-radius: 6px;
+        }
+        .qris-inner .qris-label {
+            margin-top: 10px;
+            font-size: 11px; font-weight: 900;
+            color: #1a0330;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .qris-inner .qris-name {
+            font-size: 10px; color: #444;
+            margin-top: 2px;
+        }
+
+        .qris-hint { font-size: 11px; color: var(--text-dim); font-weight: 600; margin-bottom: 12px; text-align: center; }
+
+        .qris-apps { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
+        .qris-app-tag {
+            font-size: 9px; font-weight: 700;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px; padding: 3px 10px;
+            color: rgba(209,179,232,0.65);
+            letter-spacing: 0.5px;
+        }
+
+        /* DIVIDER */
+        .divider { border: none; height: 1px; background: linear-gradient(90deg, transparent, rgba(208,0,255,0.2), transparent); margin: 20px 0; width: 100%; }
+
+        /* TRANSFER SECTION */
+        .transfer-section { text-align: center; }
+        .transfer-header {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-bottom: 18px;
+        }
+        .transfer-header-badge { font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 900; color: #fff; letter-spacing: 1px; }
+        .transfer-header-tag { font-size: 9px; font-weight: 900; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff; border-radius: 10px; padding: 2px 8px; letter-spacing: 1px; text-transform: uppercase; }
+
+        .transfer-box {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 18px 16px;
+            margin-bottom: 14px;
+        }
+        .transfer-app-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; }
+        .transfer-app-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #0c7fdb, #1d4ed8); display: flex; align-items: center; justify-content: center; }
+        .transfer-app-icon svg { width: 20px; height: 20px; color: #fff; }
+        .transfer-app-name { font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 900; color: #60a5fa; letter-spacing: 1px; }
+
+        /* ===== [UBAH: NOMOR DANA — ganti isi id="danaNum"] ===== */
+        .transfer-number { font-size: clamp(14px, 5.5vw, 28px); font-weight: 900; color: var(--accent2); letter-spacing: clamp(1px, 1.5vw, 4px); margin-bottom: 5px; font-family: 'Orbitron', sans-serif; word-break: break-all; overflow-wrap: break-word; }
+        /* ===== [/UBAH] ===== -->
+        <!-- ===== [UBAH: NAMA REKENING DANA] ===== -->
+        .transfer-name { font-size: 12px; color: var(--text); margin-bottom: 0; font-weight: 600; }
+        /* ===== [/UBAH] ===== */
+
+        .btn-copy {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #4a148c, #311b92);
+            border: 1px solid rgba(208,0,255,0.4);
+            border-radius: 40px;
+            color: #fff;
+            font-size: 12px; font-weight: 900;
+            letter-spacing: 1px; cursor: pointer; transition: 0.25s;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            margin-top: 14px;
+        }
+        .btn-copy svg { width: 14px; height: 14px; }
+        .btn-copy:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(74,20,140,0.6); border-color: var(--accent); }
+        .btn-copy:active { transform: translateY(0); }
+        .btn-copy.copied { background: linear-gradient(135deg, #1b5e20, #004d40); border-color: #22c55e; }
+        .btn-copy.error { background: linear-gradient(135deg, #7f1d1d, #450a0a); border-color: #f87171; }
+
+        /* COPY TOAST */
+        #copyToast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
+            background: rgba(20,5,35,0.95);
+            border: 1px solid rgba(34,197,94,0.5);
+            border-radius: 30px;
+            padding: 10px 22px;
+            font-size: 12px; font-weight: 700;
+            color: #86efac;
+            z-index: 9000;
+            transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1), opacity 0.3s;
+            opacity: 0; pointer-events: none;
+        }
+        #copyToast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* STEPS */
+        .steps { margin-top: 4px; }
+        .steps-title { font-size: 10px; font-weight: 900; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
+        .step { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 11px; }
+        .step-num { width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; background: rgba(208,0,255,0.12); border: 1px solid rgba(208,0,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: var(--accent); }
+        .step-text { font-size: 12px; color: var(--text); line-height: 1.6; padding-top: 4px; }
+        .step-text strong { color: #fff; font-weight: 700; }
+
+        /* NAV BUTTONS */
+        .nav-btns { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-bottom: 20px; }
+        .nav-btn {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 12px; font-weight: 900;
+            text-transform: uppercase; text-decoration: none;
+            transition: 0.25s; letter-spacing: 0.5px;
+            cursor: pointer;
+        }
+        .nav-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+        .nav-btn.primary { background: linear-gradient(135deg, #4a148c, #311b92); border: 1px solid rgba(208,0,255,0.4); color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+        .nav-btn.secondary { background: rgba(20,5,35,0.7); border: 1px solid rgba(208,0,255,0.2); color: var(--text); }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,0.5); }
+        .nav-btn:active { transform: translateY(0); }
+
+        /* MUSIC PLAYER */
+        .player { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; width: 100%; margin-bottom: 20px; transition: border-color 0.2s; }
+        .player:hover { border-color: rgba(208,0,255,0.4); }
+        .player-disc { width: 42px; height: 42px; flex-shrink: 0; border-radius: 50%; background: conic-gradient(from 0deg, #1a0330, #4a148c, #1a0330, #6a1b9a, #1a0330); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; animation: discSpin 4s linear infinite; animation-play-state: paused; }
+        .player-disc.playing { animation-play-state: running; }
+        .player-disc::after { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+        @keyframes discSpin { to { transform: rotate(360deg); } }
+        .player-info { flex: 1; min-width: 0; }
+        .player-title { font-size: 12px; font-weight: 900; color: #fff; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .player-dur { font-size: 10px; color: var(--accent2); font-weight: 600; }
+        .player-bars { display: flex; align-items: flex-end; gap: 2px; height: 20px; flex-shrink: 0; }
+        .player-bars span { width: 3px; height: 3px; background: var(--accent2); border-radius: 2px; transition: height 0.09s ease; }
+        .player-btn { width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: rgba(208,0,255,0.1); border: 1px solid rgba(208,0,255,0.25); display: flex; align-items: center; justify-content: center; color: var(--accent); }
+        .player-btn svg { width: 13px; height: 13px; }
+
+        .footer { text-align: center; font-size: 11px; color: var(--text-dim); line-height: 1.8; }
+        .footer b { font-family: 'Orbitron', sans-serif; color: #fff; font-weight: 900; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+    <div id="bg-hex"></div>
+    <!-- TOAST -->
+    <div id="copyToast">✅ Nomor berhasil disalin!</div>
+
+    <!-- ===== [UBAH: SUARA KLIK] ===== -->
+    <audio id="clickSnd" preload="none"><source src="https://cdn.nekohime.site/file/0kiyfumx.mp3" type="audio/mpeg" /></audio>
+    <!-- ===== [UBAH: MUSIK LATAR] ===== -->
+    <audio id="bgMusic" preload="none" loop><source src="https://c.termai.cc/a110/LXxj.mp3" type="audio/mpeg" /></audio>
+
+    <!-- LOADING -->
+    <div id="loading">
+        <div class="ld-box">
+            <div class="ld-logo-wrap"><div class="ld-ring"></div><div class="ld-ring-inner"></div><div class="ld-dot"></div></div>
+            <div class="ld-brand">REVIZA</div>
+            <div class="ld-sub">Halaman Pembayaran</div>
+            <div class="ld-progress"><div class="ld-bar" id="ldBar"></div></div>
+            <div class="ld-status" id="ldStatus">Menyiapkan metode pembayaran...</div>
+            <button class="ld-btn" id="ldBtn" onclick="startApp()">Lihat Pembayaran &rarr;</button>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="header">
+        <span class="logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="3"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Pembayaran
+        </span>
+        <a href="https://revizayowa.biz.id/" class="back-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Beranda
+        </a>
+    </header>
+
+    <main class="main" id="content" style="display:none;">
+        <div class="page-title">
+            <h1>METODE PEMBAYARAN</h1>
+            <p>Pilih metode yang paling nyaman</p>
+        </div>
+
+        <!-- MUSIC PLAYER -->
+        <div class="player" id="musicPlayer">
+            <div class="player-disc" id="disc"></div>
+            <div class="player-info">
+                <div class="player-title" id="songTitle">YOASOBI — IDOL</div>
+                <div class="player-dur" id="songDuration">▷ Tekan untuk putar</div>
+            </div>
+            <div class="player-bars" id="specBars"></div>
+            <div class="player-btn" id="playBtn">
+                <svg id="iconPlay" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+                <svg id="iconPause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+            </div>
+        </div>
+
+        <!-- PAYMENT CARD -->
+        <div class="pay-card">
+
+            <!-- ================================================== -->
+            <!--  QRIS — area scan QR code                          -->
+            <!-- ================================================== -->
+            <div class="qris-section">
+                <div class="qris-header">
+                    <div class="qris-header-badge">QRIS</div>
+                    <div class="qris-header-tag">Universal</div>
+                </div>
+
+                <div class="qris-outer">
+                    <div class="qris-inner">
+                        <!-- ===== [UBAH: FOTO QRIS — ganti URL src di bawah] ===== -->
+                        <!-- Pastikan foto QRIS beresolusi tinggi agar mudah di-scan -->
+                        <img src="https://cdn.nekohime.site/file/p96pvq4m.jpg" alt="QRIS REVIZA — Scan untuk membayar" />
+                        <!-- ===== [/UBAH] ===== -->
+                        <div class="qris-label">REVIZA · ZAAPREST</div>
+                        <div class="qris-name">Muhammad Reza Fauzan</div>
+                    </div>
+                </div>
+
+                <p class="qris-hint">📷 Scan dengan kamera atau aplikasi E-Wallet / M-Banking</p>
+
+                <div class="qris-apps">
+                    <span class="qris-app-tag">GoPay</span>
+                    <span class="qris-app-tag">OVO</span>
+                    <span class="qris-app-tag">DANA</span>
+                    <span class="qris-app-tag">ShopeePay</span>
+                    <span class="qris-app-tag">LinkAja</span>
+                    <span class="qris-app-tag">BCA</span>
+                    <span class="qris-app-tag">BRI</span>
+                    <span class="qris-app-tag">Mandiri</span>
+                    <span class="qris-app-tag">BNI</span>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- ================================================== -->
+            <!--  TRANSFER MANUAL DANA                              -->
+            <!-- ================================================== -->
+            <div class="transfer-section">
+                <div class="transfer-header">
+                    <div class="transfer-header-badge">Transfer Manual</div>
+                    <div class="transfer-header-tag">DANA</div>
+                </div>
+
+                <div class="transfer-box">
+                    <div class="transfer-app-row">
+                        <div class="transfer-app-icon">
+                            <!-- DANA logo — huruf D -->
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h5c4.4 0 8 3.6 8 8s-3.6 8-8 8H6V4zm2 2v12h3c3.3 0 6-2.7 6-6s-2.7-6-6-6H8z"/></svg>
+                        </div>
+                        <div class="transfer-app-name">DANA</div>
+                    </div>
+                    <!-- ===== [UBAH: NOMOR DANA] ===== -->
+                    <div class="transfer-number" id="danaNum">08978595858</div>
+                    <!-- ===== [UBAH: NAMA PEMILIK DANA] ===== -->
+                    <div class="transfer-name">A/N: Muhammad Reza Fauzan</div>
+                    <!-- ===== [/UBAH] ===== -->
+
+                    <button class="btn-copy" id="btnCopy" onclick="copyDana()">
+                        <!-- Copy icon -->
+                        <svg id="copyIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        <span id="copyText">Salin Nomor</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- PANDUAN -->
+            <div class="steps">
+                <div class="steps-title">Cara Pembayaran</div>
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-text">Pilih produk di <strong>halaman produk</strong>, catat nama &amp; harganya.</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-text">Bayar via <strong>QRIS</strong> (scan) atau <strong>DANA Transfer</strong> (salin nomor) sesuai nominal.</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-text">Kirim <strong>screenshot bukti bayar</strong> ke WhatsApp admin beserta nama produk.</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div class="step-text">Admin proses &amp; kirim produk. <strong>Fast respon!</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAV BUTTONS -->
+        <div class="nav-btns">
+            <!-- Tombol Produk -->
+            <a href="https://produk.revizayowa.biz.id/" class="nav-btn primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                Lihat Daftar Produk
+            </a>
+            <!-- Tombol WhatsApp Admin -->
+            <a href="https://wa.me/628978595858" class="nav-btn primary" target="_blank">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                Chat WhatsApp Admin
+            </a>
+            <!-- Tombol Beranda -->
+            <a href="https://revizayowa.biz.id/" class="nav-btn secondary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Kembali ke Beranda
+            </a>
+        </div>
+
+        <div class="footer">
+            &copy; <b>ZAAPREST</b> 2024–2026<br>
+            <span style="font-size:9px;margin-top:4px;display:block;color:rgba(209,179,232,0.3);">Pembayaran aman &amp; terpercaya</span>
+        </div>
+    </main>
+
+    <script>
+    // LOADING
+    const ldBar=document.getElementById('ldBar'),ldStatus=document.getElementById('ldStatus'),ldBtn=document.getElementById('ldBtn');
+    const loadSteps=[{at:35,msg:'Menyiapkan metode pembayaran...'},{at:70,msg:'Memverifikasi keamanan...'},{at:95,msg:'Hampir siap...'},{at:100,msg:'Halaman siap!'}];
+    let ldPct=0,ldStep=0;
+    (function tick(){
+        ldPct=Math.min(100,ldPct+Math.random()*4+2);
+        ldBar.style.width=ldPct+'%';
+        while(ldStep<loadSteps.length&&ldPct>=loadSteps[ldStep].at){ldStatus.textContent=loadSteps[ldStep].msg;ldStep++;}
+        if(ldPct<100)setTimeout(tick,55);else ldBtn.style.display='inline-block';
+    })();
+
+    function startApp(){
+        document.getElementById('loading').classList.add('hide');
+        document.getElementById('content').style.display='flex';
+    }
+
+    // CLICK SOUND
+    const clickSnd=document.getElementById('clickSnd');
+    document.addEventListener('click',e=>{if(e.target.closest('a,button,.player')){clickSnd.currentTime=0;clickSnd.play().catch(()=>{});}});
+
+    // COPY DANA — multi-fallback
+    function showToast(msg, ok) {
+        const t = document.getElementById('copyToast');
+        t.textContent = msg;
+        t.style.borderColor = ok ? 'rgba(34,197,94,0.5)' : 'rgba(248,113,113,0.5)';
+        t.style.color = ok ? '#86efac' : '#fca5a5';
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    function copyDana() {
+        const num = document.getElementById('danaNum').textContent.trim();
+        const btn = document.getElementById('btnCopy');
+        const span = document.getElementById('copyText');
+        const icon = document.getElementById('copyIcon');
+
+        function onSuccess() {
+            btn.classList.add('copied');
+            span.textContent = 'Tersalin!';
+            icon.innerHTML = '<polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/>';
+            showToast('✅ ' + num + ' berhasil disalin!', true);
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                span.textContent = 'Salin Nomor';
+                icon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+            }, 2500);
+        }
+
+        function onFail() {
+            // Fallback: select + execCommand
+            try {
+                const el = document.getElementById('danaNum');
+                const range = document.createRange();
+                range.selectNode(el);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                const ok = document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+                if (ok) { onSuccess(); return; }
+            } catch(e2) {}
+            // Last resort: prompt
+            btn.classList.add('error');
+            span.textContent = 'Salin manual';
+            showToast('Salin manual: ' + num, false);
+            setTimeout(() => { btn.classList.remove('error'); span.textContent = 'Salin Nomor'; }, 2500);
+            window.prompt('Salin nomor DANA ini:', num);
+        }
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(num).then(onSuccess).catch(onFail);
+        } else {
+            onFail();
+        }
+    }
+
+    // MUSIC PLAYER
+    const music=document.getElementById('bgMusic'),disc=document.getElementById('disc');
+    const songDuration=document.getElementById('songDuration');
+    const iconPlay=document.getElementById('iconPlay'),iconPause=document.getElementById('iconPause');
+    const specContainer=document.getElementById('specBars'),specBars=[];
+    for(let i=0;i<10;i++){const b=document.createElement('span');b.style.height='3px';specContainer.appendChild(b);specBars.push(b);}
+    let specInt=null;
+    function startSpec(){if(specInt)return;specInt=setInterval(()=>{specBars.forEach(b=>b.style.height=(Math.floor(Math.random()*16)+3)+'px');},90);}
+    function stopSpec(){clearInterval(specInt);specInt=null;specBars.forEach(b=>b.style.height='3px');}
+    document.getElementById('musicPlayer').addEventListener('click',()=>{
+        if(music.paused){music.play().then(()=>{disc.classList.add('playing');iconPlay.style.display='none';iconPause.style.display='';startSpec();}).catch(()=>{});}
+        else{music.pause();disc.classList.remove('playing');iconPlay.style.display='';iconPause.style.display='none';songDuration.textContent='▷ Tekan untuk putar';stopSpec();}
+    });
+    setInterval(()=>{if(!music.paused&&!isNaN(music.duration)){const c=music.currentTime,d=music.duration;const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0');songDuration.textContent='▶ '+fmt(c)+' / '+fmt(d);}},1000);
+    </script>
+</body>
+</html>
